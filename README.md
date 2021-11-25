@@ -2,14 +2,20 @@
 I will track here the SQL project activity within Data academy
 
 1. 01_SQL_Project_Script_Weekend_Season_V01
+----------------------------------------
       File contains MariaDB code that creates a new table containing following output data:
           a. date
           b. country .
           c. weekend column - assigns 1 value to rows where day from date corresponds to weekend, 0 for working day
           d. season column  - assigns 0 for spring season, 1 for summer, 2 for autumn, 3 for winter
-
+      
+     UPDATE 24-11-2021:
+ 		number of confirmed cases and performed test are summarized for each day and country
+		percentage value of positive tests is calculated
+		number of confirmed cases per 100 000 inhabitants is calculated.
 
 2. 02_SQL_Project_Script_Country_Variables_V01
+----------------------------------------
       SQL code provides following output:
       a. View named "v_hustota_zalidneni" is created as simple SELECT command from "countries" table. 
           output is: country and population_density
@@ -24,6 +30,7 @@ I will track here the SQL project activity within Data academy
          Command uses JOIN keyword. 
          
  3. 03_SQL_Project_Script_Weather_V01
+----------------------------------------
       a. Scripts calculates average temperature for each city, it filters time range 8:00-18:00  and lines where city is NULL by using WHERE clause
          Data are grouped by city.
          Average temperature is rouded to 2 decimal digits. 
@@ -73,7 +80,22 @@ I will track here the SQL project activity within Data academy
          --> CAST() - changes the data type to INTEGER in this special case
          --> ROUND() - rounds the result to 2 decimal digits. 
          
-          
-        
+     03_SQL_Project_Script_Weather_V02
+----------------------------------------
+      
+         Script extension which fixes different names in table countries and weather.
+         Extra SQL command sequence is written to get city names, that are defined in the weather table and are not included in the countries table. 
+          --> in total 11 city names are not consistent, which makes troubles during the joining process. 
+         In order to fix it a new table named "t_EU_Weather_Summary" is created and includes the information about the maximal wind speed for each day,
+         as well as the info about the hours of rain and average temperature during the day.
+         
+         -> UPDATE command changes the city names according to coutry table to allow table JOIN.
+         Weather information is available only for the european countries!
+
+         
+	04_SQL_Project_Script_Assembly
+----------------------------------------
+	
+
    
              
