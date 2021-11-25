@@ -16,3 +16,33 @@ CREATE OR REPLACE TABLE t_weekend_and_season AS (
  
 SELECT * FROM t_weekend_and_season twas 
 WHERE date = '2020-03-21';
+
+# Script combines data from 3 different table and calculates number of confirmed cases per 100000 inhabitants
+# and the percentage value of all positive tests performed. 
+# 
+SELECT
+   base.*,
+   tests.tests_performed,
+   (base.confirmed / pop.population)*100000 AS confirmed_per_100k,
+   (base.confirmed / tests.tests_performed)*100 AS percentage_of_positive_tests
+FROM (
+	SELECT
+	cbd.`date`, cbd.country, cbd.confirmed
+	FROM covid19_basic_differences cbd
+    ) base
+LEFT JOIN (
+	SELECT  
+	ct.country, ct.`date`, ct.tests_performed 
+	FROM covid19_tests ct 
+	WHERE ct.tests_performed IS NOT NULL
+	) tests
+ON base.country = tests.country
+AND base.`date` = tests.`date`
+LEFT JOIN (
+    SELECT
+    	c.country, c.population
+    FROM countries c
+    WHERE c.population > 0 AND c.population IS NOT NULL
+   ) pop
+ON base.country = pop.country
+;
