@@ -6,7 +6,8 @@ SELECT
     gini.Average_GINI,
     mortality.children_mortality_in_2019,
     median.median_age_2018,
-    LE_Diff.Life_Expectancy_50year_Difference
+    LE_Diff.Life_Expectancy_50year_Difference,
+    weather_info.*
 FROM (
     SELECT cbd.`date`, cbd.country,
     CASE WHEN WEEKDAY(cbd.`date`) in (5, 6) THEN 1 ELSE 0 END AS weekend,
@@ -74,18 +75,20 @@ FROM (
 		) a
 		ON base_lf.country = a.country
 	 ) LE_Diff
-	 ON base.country = LE_Diff.country  
+	 ON base.country = LE_Diff.country 
+LEFT JOIN 
+      (
+		SELECT 
+			base2.country,
+			base2.capital_city,
+			tews.*
+		FROM countries base2
+		LEFT JOIN t_eu_weather_summary tews 
+		ON base2.capital_city = tews.city
+       ) weather_info
+    ON base.country = weather_info.country
+    AND base.`date` = weather_info.`date`
 ;
 
-# Section nr. 2
-SELECT 
-	base2.country,
-	base2.capital_city,
-	tews.*
-FROM countries base2
-LEFT JOIN t_eu_weather_summary tews 
-ON base2.capital_city = tews.city
-WHERE base2.country = 'Austria'
-;
 
 
