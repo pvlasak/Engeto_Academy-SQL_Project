@@ -26,7 +26,7 @@ I will track here the SQL project activity within Data academy
       e. median age in 2018 from countries table
       f. percentage value for each religion in every single country in 2020
          Covid-19 was the most critical year and vaccination was not available.  
-      g. Life expectancy delta value between 1960 and 2015 was calculated for every single country
+      g. Life expectancy delta value between 1965 and 2015 was calculated for every single country
          Command uses JOIN keyword. 
          
  3. 03_SQL_Project_Script_Weather_V01
@@ -69,7 +69,7 @@ I will track here the SQL project activity within Data academy
         ===========================================
         all data from common expresssion table are selected and new column named "continuous_rain" is added:
             CASE WHEN function checks if the "timestamp_difference is equal" to "Hours_of_rain" which may indicate if the rain was continous during the whole day or not. 
-                  This information can be further used for reduction of number of hours for days where the was not continous. Any specific factor can be defined for 
+                  This information can be further used for reduction of number of hours for days where the rain was not continous. Any specific scaling factor < 1 can be defined for 
                   hours calculation for those days -> is not implemented until now. 
        
        c. Maximal wind speed for every day and city 
@@ -95,7 +95,28 @@ I will track here the SQL project activity within Data academy
          
 	04_SQL_Project_Script_Assembly
 ----------------------------------------
-	
+	A. CREATE VIEW is defined to extract data from religion table and output religion percentage value for each religion.
+	B. Main SQL Section:
+		- base table is defined using data from table named 'covid19_basic_differences'
+				-> dates are analyzed like described in 1.
+		- data regarding covid-19 values are joined
+				-> number of confirmed cases
+				-> number of total performed tests
+				-> number of confirmed per 100000 inhabitants of population
+				-> percentage value of positive tests performed. 
+		- data from 2. 02_SQL_Project_Script_Country_Variables_V01 are joined.
+  				-> population density
+				-> GDP per inhabitant
+				-> GINI coefficient
+				-> children mortality
+				-> median age in 2018
+				-> Life expectancy difference : 2015 and 1965
+		- religion percentage for every single religion joined referencing created view from A.
+		- weather data for european countries from new table named t_EU_Weather_Summary
+ 
+
+
+
 
    
              
