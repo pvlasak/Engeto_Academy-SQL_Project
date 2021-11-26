@@ -1,12 +1,42 @@
 # Section nr. 1
+CREATE OR REPLACE VIEW v_religion_percentage_per_country AS (
+SELECT 
+     base.`year`, base.country, a.religion,
+     ROUND((a.population / base.total_population * 100),2) AS percentage_value_religion
+FROM (
+     SELECT r.`year`, r.country,
+     SUM(r.population) AS total_population
+     FROM religions r
+     WHERE r.`year` = 2020
+     GROUP BY r.country
+) base
+RIGHT JOIN (
+     SELECT r2.`year`, r2.country, r2.religion, r2.population
+     FROM religions r2
+     WHERE r2.`year` = 2020) a
+ON base.country = a.country
+);
+
 SELECT 
     base.`date`, base.country, base.weekend, base.season, 
+    covid_19_values.confirmed,
+    covid_19_values.tests_performed,
+    covid_19_values.confirmed_per_100k,
+    covid_19_values.percentage_of_positive_tests,
     pd.population_density,
     GDP_economies.GDP_per_inhabitant,
     gini.Average_GINI,
     mortality.children_mortality_in_2019,
     median.median_age_2018,
     LE_Diff.Life_Expectancy_50year_Difference,
+    christianity_prctg.percentage_value_religion AS 'Christianity Percentage',
+    islam_prctg.percentage_value_religion AS 'Islam Percentage',
+    unaff_rel_prctg.percentage_value_religion AS 'Unaffiliated Religions Percentage',
+    hinduism_prctg.percentage_value_religion AS 'Hinduism Percentage',
+    buddhism_prctg.percentage_value_religion AS 'Buddhism Percentage',
+    folk_rel_prctg.percentage_value_religion AS 'Folk Religions',
+    oth_rel_prctg.percentage_value_religion AS 'Other Religions',
+    judaism_prctg.percentage_value_religion AS 'Judaism',
     weather_info.*
 FROM (
     SELECT cbd.`date`, cbd.country,
@@ -23,6 +53,36 @@ FROM (
     END AS season
     FROM covid19_basic_differences cbd 
     ) base
+    LEFT JOIN
+    (
+    SELECT
+	   base1.*,
+	   tests.tests_performed,
+	   (base1.confirmed / pop.population)*100000 AS confirmed_per_100k,
+	   (base1.confirmed / tests.tests_performed)*100 AS percentage_of_positive_tests
+	FROM (
+		SELECT
+		cbd.`date`, cbd.country, cbd.confirmed
+		FROM covid19_basic_differences cbd
+	    ) base1
+	LEFT JOIN (
+		SELECT  
+		ct.country, ct.`date`, ct.tests_performed 
+		FROM covid19_tests ct 
+		WHERE ct.tests_performed IS NOT NULL
+		) tests
+	ON base1.country = tests.country
+	AND base1.`date` = tests.`date`
+	LEFT JOIN (
+	    SELECT
+	    	c.country, c.population
+	    FROM countries c
+	    WHERE c.population > 0 AND c.population IS NOT NULL
+	   ) pop
+	ON base1.country = pop.country
+    ) covid_19_values
+    ON base.country = covid_19_values.country
+    AND base.`date` = covid_19_values.`date`
 	LEFT JOIN 
 	   (
 	   SELECT country,
@@ -75,8 +135,72 @@ FROM (
 		) a
 		ON base_lf.country = a.country
 	 ) LE_Diff
-	 ON base.country = LE_Diff.country 
-LEFT JOIN 
+   ON base.country = LE_Diff.country 
+   LEFT JOIN 
+     (
+       SELECT 
+           vrppc.country, vrppc.percentage_value_religion 
+       FROM v_religion_percentage_per_country vrppc 
+       WHERE religion = 'Christianity'
+     ) christianity_prctg
+   ON base.country = christianity_prctg.country 
+   LEFT JOIN 
+     (
+       SELECT 
+           vrppc.country, vrppc.percentage_value_religion 
+       FROM v_religion_percentage_per_country vrppc 
+       WHERE religion = 'Islam'
+     ) islam_prctg
+   ON base.country = islam_prctg.country
+   LEFT JOIN 
+     (
+       SELECT 
+           vrppc.country, vrppc.percentage_value_religion 
+       FROM v_religion_percentage_per_country vrppc 
+       WHERE religion = 'Unaffiliated Religions'
+     ) unaff_rel_prctg
+   ON base.country = unaff_rel_prctg.country
+   LEFT JOIN 
+     (
+       SELECT 
+           vrppc.country, vrppc.percentage_value_religion 
+       FROM v_religion_percentage_per_country vrppc 
+       WHERE religion = 'Hinduism'
+     ) hinduism_prctg
+   ON base.country = hinduism_prctg.country
+   LEFT JOIN 
+     (
+       SELECT 
+           vrppc.country, vrppc.percentage_value_religion 
+       FROM v_religion_percentage_per_country vrppc 
+       WHERE religion = 'Buddhism'
+     ) buddhism_prctg
+   ON base.country = buddhism_prctg.country
+   LEFT JOIN 
+     (
+       SELECT 
+           vrppc.country, vrppc.percentage_value_religion 
+       FROM v_religion_percentage_per_country vrppc 
+       WHERE religion = 'Folk Religions'
+     ) folk_rel_prctg
+   ON base.country = folk_rel_prctg.country
+   LEFT JOIN 
+     (
+       SELECT 
+           vrppc.country, vrppc.percentage_value_religion 
+       FROM v_religion_percentage_per_country vrppc 
+       WHERE religion = 'Other Religions'
+     ) oth_rel_prctg
+   ON base.country = oth_rel_prctg.country
+   LEFT JOIN 
+     (
+       SELECT 
+           vrppc.country, vrppc.percentage_value_religion 
+       FROM v_religion_percentage_per_country vrppc 
+       WHERE religion = 'Judaism'
+     ) judaism_prctg
+   ON base.country = judaism_prctg.country
+   LEFT JOIN 
       (
 		SELECT 
 			base2.country,
