@@ -32,6 +32,7 @@ SELECT
 FROM countries c;
 
 # F. Calculates the percentage value for each individual religion 
+CREATE OR REPLACE VIEW v_religion_percentage_per_country AS (
 SELECT 
      base.`year`, base.country, a.religion,
      ROUND((a.population / base.total_population * 100),2) AS percentage_value_religion
@@ -46,8 +47,8 @@ RIGHT JOIN (
      SELECT r2.`year`, r2.country, r2.religion, r2.population
      FROM religions r2
      WHERE r2.`year` = 2020) a
-ON base.country = a.country;
-
+ON base.country = a.country
+)
 # G. script solves the difference between life expectancy in 2015 and 1965
 SELECT 
    base.country, 
